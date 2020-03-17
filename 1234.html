@@ -1,294 +1,121 @@
-<!DOCTYPE html>
 <html>
 <head>
 <style>
-body {
-	overflow: hidden
-}
-#info{
-	position: absolute;
-	top: 10%;
-	width:100%;
-	padding: 10px;
-	text-align:center;
-	font-size: 30px;
-	color:#ffff00
+#info {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  color: #ffff00
 }
 </style>
 </head>
 <body>
+<div id='info'><a href="javascript:toggleCamera()">toggle</a></div>
 
-<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/108/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
 <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
 
-<div id='info'>Clock
-<br>
-<button id ="toggle" style="width:10%" type ="submit">stop</button>
-<button id ="restart" style="width:10%"  type ="submit">restart</button>
-<button id ="display" style="width:10% "  type ="submit">quartz</button>
-
-</div>
-
-
 <script>
-javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='https://mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
 
-
-var scene , camera , renderer;
+var remderer, scene, camera;
+var car;
+var theta = 0;
+var useThirdPersonCamera = false;
 var controls;
-var showsecond,second,showquartz;
-var sector;
-var angle = 0,time;
-var turn = true;
-var geometry,matirial;
-var white,yellow;
-var nowsecond=true,nowsector=false,nowquartz=false;
-var cancel;
 
-
+function toggleCamera(){
+	useThirdPersonCamera = !useThirdPersonCamera;
+	if(useThirdPersonCamera == false){
+		controls.enabled = true;
+		camera.lookAt(new THREE.Vector3(0,0,0));
+	}
+	else{
+		controls.enabled = false;
+	}
+}
 init();
-makeSecond();
-makeSector();
-makeQuartz();
-displayClock();
-onWindowResize();
+animate();
 
-
-//let clock to stop or run
-$("#toggle").click(function(){
-	turn =! turn;
-	if(turn)
-		$("#toggle").text('stop');
-	else
-		$("#toggle").text('turn');
-	});		
-	
-//set clock to start point
-$("#restart").click(function(){
-	angle = 0;
-	});
-
-//switch shape
-$("#display").click(function(){
-	if(nowsecond){
-		nowsecond=false;
-		showsecond.visible = false;
-		nowsector = true;
-		sector.visible = true;
-		nowquartz=false;
-		showquartz.visible=false;
-		$("#display").text('sector');
-		}
-	else if(nowsector){
-		nowsecond=false;
-		showsecond.visible = false;
-		nowsector=false;
-		sector.visible = false;
-		nowquartz=true;
-		showquartz.visible=true;
-		$("#display").text('second');
-		}
-	else if(nowquartz){
-		nowsecond=true;
-		showsecond.visible = true;
-		nowsector=false;
-		sector.visible = false;
-		nowquartz=false;
-		showquartz.visible=false;
-		$("#display").text('quartz');
-		}
-	});
-
-
-window.addEventListener('resize',onWindowResize,false);
 
 function init(){
 
-
-	angle = 0;
+	//setup renderer, scene, camera
 	
 	renderer = new THREE.WebGLRenderer();
-	document.body.appendChild (renderer.domElement);
-	var height = window.innerHeight;
-	var width = window.innerWidth;
 	
+	width = window.innerWidth;
+	height = window.innerHeight;
 	
-	renderer.setSize(width,height);
-	
-	renderer.setClearColor (0x888888);
+	renderer.setSize(width, height);
+	document.body.appendChild(renderer.domElement);
+	renderer.setClearColor(0x888888);
 	
 	scene = new THREE.Scene();
+	camera = new THREE.PerspectiveCamera( 90, width/height, 1, 1000);
 	
-	camera = new THREE.PerspectiveCamera ( 35 , width/height, 1,1000);
-	camera.position.y = 0;
-	camera.position.z = 200;
-	camera.lookAt(new THREE.Vector3(0,0,0));
+	controls = new THREE.OrbitControls(camera, renderer.domElement);
 	
-	var mat = new THREE.MeshNormalMaterial();
-	var black = new THREE.MeshBasicMaterial({color:0x000000});
-	white = new THREE.MeshBasicMaterial({color:0xffffff});
-	yellow = new THREE.MeshBasicMaterial({color:0xffff66});
-		
-	var twelve = new THREE.Mesh (new THREE.BoxGeometry(1,5,0), white);
-	twelve.position.set (0,32,0);
-	scene.add(twelve);	
-				
-	var square = new THREE.Mesh (new THREE.BoxGeometry(70,70,10),black);
-	square.position.set (0,0,-5);
-	scene.add( square );
+	camera.position.set(0, 40, 150);
 	
+	// set up objects in the scene
+	var gridHelper = new THREE.GridHelper( 200, 20, 0xFF0000, 0x000000);
+	scene.add( gridHelper );
+
 	window.addEventListener('resize', onWindowResize, false);
-
+	////////////////////////////////
+	/*
+	boxG = new THREE.BoxGeometry(40, 10 ,20);
+	box = new THREE.Mesh(boxG, new THREE.MeshNormalMaterial());
+	scene.add(box);
+	*/
+	geometry = new THREE.Geometry();
+	geometry.vertices.push(
+		new THREE.Vector3(30,0,0),
+		new THREE.Vector3(0,15,0),
+		new THREE.Vector3(0,0,-15),
+		new THREE.Vector3(0,0,15)
+	);
+	geometry.faces.push(
+		new THREE.Face3(0,1,3),
+		new THREE.Face3(1,0,2),
+		new THREE.Face3(1,2,3),
+		new THREE.Face3(2,0,3)
+	);
+	
+	geometry.computeFaceNormals();
+//	geometry.computeVertexNormals();
+	car = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
+	scene.add(car);
 }
 
-function makeSecond(){
+function onWindowResize() {
 
-	showsecond = new THREE.Group();
-    second = new THREE.Mesh (new THREE.BoxGeometry(1,30,1), yellow);
-	second.position.set (0,15,1);
-	showsecond.add (second);
-	scene.add (showsecond);
-	
-	
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
-
-function makeSector(){
-
-	geometry = new THREE.CircleGeometry( 30, 360 ,((Math.PI/2-angle)%(Math.PI*2)),(angle%(2*Math.PI)));
-    sector = new THREE.Mesh(geometry,white);
-	sector.position.set(0,0,1);
-	scene.add(sector);
-	
-	
-}
-
-function makeQuartz(){
-
-	showquartz = new THREE.Group();
-	var quartz = new THREE.Mesh (new THREE.BoxGeometry(1,30,1), yellow);
-	quartz.position.set (0,15,1);
-	showquartz.add (quartz);
-	scene.add (showquartz);
-}
-
-
-function displayClock(){
-
-	
-	if(nowsecond){
-		showsecond.visible = true;
-		sector.visible = false;
-		showquartz.visible = false;
-		animate();
-	}
-	else if(nowsector){
-		showsecond.visible = false;
-		sector.visible = true;
-		showquartz.visible = false;
-		animate2();
-	}
-	else if(nowquartz){
-		showsecond.visible = false;
-		sector.visible = false;
-		showquartz.visible = true;
-		animate3();
-	}
-}
-
-
 
 function animate(){
-
-	showsecond.rotation.z = -angle;
+	renderer.render(scene, camera);
 	
-	if(turn){
-	angle += Math.PI*2/60;
+	
+	theta += 0.02; // theta radiam
+	car.rotation.y = Math.PI/2 + theta;
+	
+	// move the box....
+	car.position.set(60*Math.cos(theta), 0, -60*Math.sin(theta));
+	
+	if(useThirdPersonCamera){
+		// third person camera
+		var d = Math.PI/6;
+		var h = 50;
+		camera.position.set(60*Math.cos(theta-d), h, -60*Math.sin(theta-d));
+		camera.lookAt(car.position);
 	}
-	
-	if(nowsector)
-		{
-		displayClock();
-		}
-		
-	if(nowsecond){
-	cancel = setTimeout(function(){requestAnimationFrame(animate)},1000/1);
-	}
-	window.cancelAnimationFrame(cancel);
-	render();
-	
-	
+	requestAnimationFrame (animate);
 }
-
-function animate2(){
-	
-	
-	if(turn){
-	angle += Math.PI*2/60/60;
-	}
-	
-	scene.remove(sector);
-	
-	if(nowquartz)
-		{
-		scene.remove(sector);
-	    displayClock();
-		}
-	else if(nowsector){
-	makeSector();
-	}	
-	
-    cancel = requestAnimationFrame(animate2);
-	if(nowsector){
-	requestAnimationFrame(animate2);
-	}
-	window.cancelAnimationFrame(cancel);
-	render();
-
-}
-
-function animate3(){
-	
-	
-	if(turn){
-	angle += Math.PI*2/60/60;
-	}
-	
-	if(nowsecond)
-		{
-	    displayClock();
-		}
-	else if(nowquartz){
-	showquartz.rotation.z = -angle;
-	}	
-	
-    cancel = requestAnimationFrame(animate3);
-	if(nowquartz){
-	requestAnimationFrame(animate3);
-	}
-	window.cancelAnimationFrame(cancel);
-	render();
-
-}
-
-
-function onWindowResize(){
-
-	var width = window.innerWidth;
-	var height = window.innerHeight;
-	camera.aspect = width / height;
-	camera.updateProjectionMatrix();
-	renderer.setSize( width,height);
-	
-}
-
-function render(){
-	
-	renderer.render(scene,camera);
-	
-}
-
 </script>
-
 </body>
 </html>
