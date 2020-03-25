@@ -186,6 +186,10 @@ function init() {
 }
 
 function animate() {
+  soundVal += sign*0.01;
+  soundVal = THREE.Math.clamp (soundVal, 0, 1);
+  soundtrack.volume = soundVal;
+	
   var dt = 0.1;
   var eps = 1e-3; //0.001
   var cR = 1.0;
