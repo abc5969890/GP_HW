@@ -144,8 +144,8 @@ function makeArm1() {
   let loader = new THREE.TextureLoader();
   var skin = 
 	[
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_top.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_down.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_top.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_front.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_back.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_left.png") }),
@@ -166,12 +166,12 @@ function makeArm2() {
   let loader = new THREE.TextureLoader();
   var skin = 
 	[
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_top.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_down.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_front.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_back.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_right.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_left.png") })
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_top.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/arm_front.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/arm_back.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/arm_left.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/arm_right.png") })
 	]
 	
   var body = new THREE.Mesh (new THREE.BoxGeometry(3.82*k, 1.24*k, 1.24*k), skin);
@@ -189,8 +189,8 @@ function makeLeg1() {
   let loader = new THREE.TextureLoader();
   var skin = 
 	[
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_top.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_down.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_top.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_front.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_back.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_left.png") }),
@@ -211,12 +211,12 @@ function makeLeg2() {
   let loader = new THREE.TextureLoader();
   var skin = 
 	[
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_top.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_down.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_front.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_back.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_right.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_left.png") })
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_top.png") }),          
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/leg_front.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/leg_back.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/leg_left.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/leg_right.png") })
 	]
 	
   var body = new THREE.Mesh (new THREE.BoxGeometry(4.09*k, 1.26*k, 1.26*k), skin);
