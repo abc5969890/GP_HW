@@ -19,6 +19,17 @@
 </head>
 <body>
 <div id="info"><button id='switch'>using Gyro</button></div>
+<div id = "info"> 
+	 <br>
+	<button id="play" style="width:20%">Play</button> 
+	<br> <a href="https://developers.google.com/web/updates/2017/09/autoplay-policy-changes"></a>
+
+  </div>
+
+<audio id="soundtrack" autoplay loop style="display:none">
+<source src="mp3/Wind_Liner_DAISHI_DANCE.mp3"  type='audio/mp3'>
+</audio>  
+
 <script src="https://threejs.org/build/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
@@ -28,6 +39,19 @@
 
 <script>
 
+$('#play').click ( function() {
+	isPaused = !isPaused;
+	if (isPaused) { 
+		$('#play').text ('Play')
+		soundTrack.pause()
+	} else {
+		$('#play').text ('Pause')
+		soundTrack.play()
+	}
+});
+
+var soundTrack;
+var isPaused = false;
 var camera, scene, renderer;
 var k = 10;
 var opc = 0.5;
@@ -70,6 +94,8 @@ animate();
 
 function init() {
 
+  soundTrack = document.getElementById ('soundtrack');
+  
   scene = new THREE.Scene();
 
   renderer = new THREE.WebGLRenderer();
@@ -296,7 +322,7 @@ function keyframe(t) {
 function animate() {
   theta += 0.01
 //	head.rotation.y = Math.PI/6;
-/*  mine.rotation.y = Math.PI + theta;
+  mine.rotation.y = Math.PI + theta;
   mine.position.set(160*Math.cos(theta), 0, -160*Math.sin(theta));
   keyframe(clock.getElapsedTime()); 
   arm1.rotation.y = intKey[0]//gcontrol.theta1; //Math.PI/4;
