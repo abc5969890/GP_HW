@@ -1,0 +1,343 @@
+<html>
+<head>
+<style>
+#info {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  color: #ffff00
+}
+</style>
+</head>
+<body>
+<div id="info"><button id='switch'>using Gyro</button></div>
+<script src="https://threejs.org/build/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://raw.githack.com/mrdoob/three.js/dev/examples/js/misc/Gyroscope.js"></script>
+
+<script>
+
+var camera, scene, renderer;
+var k = 10;
+var opc = 0.5;
+var head, arm, torso, leg;
+var theta = 0;
+var gcontrol;
+var gyro
+var useGyro = true;
+
+////////////////////
+var theta1 = 0,
+  theta2 = 0;
+var pose1 = {
+	theta1: .5,
+  theta2: -.8
+}
+var pose2 = {
+	theta1: -.8,
+  theta2: .8
+}
+var keys = [
+  [0, pose1],
+  [0.5, pose2],
+  [1, pose1]
+];
+var T = 120/112;
+var clock = new THREE.Clock();
+var ts = clock.getElapsedTime();  // start time
+var intKey = [];
+
+///////////////
+$('#switch').click ( function () {
+	useGyro = !useGyro;
+  if (useGyro) $('#switch').text ('using Gyro')
+  else $('#switch').text ('using LookAt')
+})
+
+init();
+animate();
+
+function init() {
+
+  scene = new THREE.Scene();
+
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x888888);
+  document.body.appendChild(renderer.domElement);
+
+  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+  camera.position.z = 500;
+  
+  camera1 = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+  camera1.position.z = 500;
+  
+  let controls = new THREE.OrbitControls(camera, renderer.domElement);
+  let controls1 = new THREE.OrbitControls(camera1, renderer.domElement);
+
+  ////////////////////////////////////////////////////////////////
+  var gridXZ = new THREE.GridHelper(400, 20, 'red', 'white');
+  scene.add(gridXZ);
+////////////////
+  mine = new THREE.Group();
+  head = makeHead();
+  torso = makeTorso();
+  mine.add (head, torso);
+  head.position.y = 7.57*k;
+  torso.position.y = 4.09*k;
+  
+  arm1 = makeArm1();
+  mine.add (arm1);
+  arm1.position.set (1.26*k+0.62*k, 7.57*k, 0);
+  arm2 = makeArm2();
+  mine.add (arm2);
+  arm2.position.set (-1.26*k-0.62*k, 7.57*k, 0);
+  scene.add (mine);
+  leg1 = makeLeg1();
+  leg1.position.set (0.63*k, 4.09*k, 0);
+  mine.add (leg1);
+  leg2 = makeLeg2();
+  leg2.position.set (-0.63*k, 4.09*k, 0);
+  mine.add (leg2);
+  
+  arm2.rotation.z = -Math.PI/2;
+  leg2.rotation.z = -Math.PI/2;
+  
+  arm2.rotation.order = 'ZYX';
+  leg2.rotation.order = 'ZYX';
+  
+  arm1.rotation.z = -Math.PI/2;
+  leg1.rotation.z = -Math.PI/2;
+  
+  arm1.rotation.order = 'ZYX';
+  leg1.rotation.order = 'ZYX';
+  
+  /////////////////////
+  gcontrol = {
+    theta1: 0.01,
+    theta2: 0.01,
+  };
+
+  var gui = new dat.GUI({load:loadJSON(), preset:'key1'});
+  gui.domElement.id = 'gui';
+
+  gyro = new THREE.Gyroscope();
+  scene.add (gyro)
+  gyro.add (camera)
+  mine.add (gyro)
+}
+
+function makeArm1() {
+  var group = new THREE.Group();
+  
+  let loader = new THREE.TextureLoader();
+  var skin = 
+	[
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_top.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_down.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_front.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_back.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_left.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_right.png") })
+	]
+  
+  var body = new THREE.Mesh (new THREE.BoxGeometry(3.82*k, 1.24*k, 1.24*k), skin);
+  group.add (body);
+  body.position.x = 3.82*k/2;
+  group.add (new THREE.AxesHelper (k));
+  return group;
+
+
+}
+function makeArm2() {
+  var group = new THREE.Group();
+  var mat = new THREE.MeshNormalMaterial({transparent:true, opacity:opc});
+  var body = new THREE.Mesh (new THREE.BoxGeometry(3.82*k, 1.24*k, 1.24*k), mat);
+  let loader = new THREE.TextureLoader();
+  var skin = 
+	[
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_top.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_down.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_front.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_back.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_right.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_left.png") })
+	]
+  
+  group.add (body);
+  body.position.x = 3.82*k/2;
+  group.add (new THREE.AxesHelper (k));
+  return group;
+
+
+}
+
+function makeLeg1() {
+  var group = new THREE.Group();
+  var mat = new THREE.MeshNormalMaterial({transparent:true, opacity:opc});
+  var body = new THREE.Mesh (new THREE.BoxGeometry(4.09*k, 1.26*k, 1.26*k), mat);
+  
+  let loader = new THREE.TextureLoader();
+  var skin = 
+	[
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_top.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_down.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_front.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_back.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_left.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_right.png") })
+	]
+  
+  group.add (body);
+  body.position.x = 4.09*k/2;
+  group.add (new THREE.AxesHelper (k));
+  return group;
+
+
+}
+function makeLeg2() {
+  var group = new THREE.Group();
+  var mat = new THREE.MeshNormalMaterial({transparent:true, opacity:opc});
+  var body = new THREE.Mesh (new THREE.BoxGeometry(4.09*k, 1.26*k, 1.26*k), mat);
+  
+  let loader = new THREE.TextureLoader();
+  var skin = 
+	[
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_top.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_down.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_front.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_back.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_right.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_left.png") })
+	]
+  
+  group.add (body);
+  body.position.x = 4.09*k/2;
+  group.add (new THREE.AxesHelper (k));
+  return group;
+
+
+}
+
+function makeHead() {
+  var headGroup = new THREE.Group();
+  var mat = new THREE.MeshNormalMaterial({transparent:true, opacity:opc});
+  var headBody = new THREE.Mesh (new THREE.BoxGeometry(2.52*k, 2.52*k, 2.52*k), mat);
+  
+  let loader = new THREE.TextureLoader();
+  var skin = 
+	[
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_face_left.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_face_right.png") })
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_face_top.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_face_down.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_face_front.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_face_back.png") }),	
+	]
+	
+  headGroup.add (headBody);
+  headBody.position.y = 2.52*k/2;
+  headGroup.add (new THREE.AxesHelper (k));
+  return headGroup;
+}
+
+function makeTorso () {
+  var group = new THREE.Group();
+  var mat = new THREE.MeshNormalMaterial({transparent:true, opacity:opc});
+  var body = new THREE.Mesh (new THREE.BoxGeometry(2.52*k, 3.48*k, 1.26*k), mat);
+  
+  let loader = new THREE.TextureLoader();
+  var skin = 
+	[
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_body_left.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_body_right.png") })
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_body_top.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_body_down.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_body_front.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_body_back.png") }),	
+	]
+  
+  group.add (body);
+  body.position.y = 3.48*k/2;
+  group.add (new THREE.AxesHelper (2*k));
+return group;
+
+}
+
+function keyframe(t) {
+  var s = ((t - ts) % T) / T;
+
+  for (var i = 1; i < keys.length; i++) {
+    if (keys[i][0] > s) break;
+  }
+  // take i-1
+  var ii = i - 1;
+  var a = (s - keys[ii][0]) / (keys[ii + 1][0] - keys[ii][0]);
+  intKey = [keys[ii][1].theta1 * (1 - a) + keys[ii + 1][1].theta1 * a,
+            keys[ii][1].theta2 * (1 - a) + keys[ii + 1][1].theta2 * a
+  ];
+
+}
+
+function animate() {
+  theta += 0.01
+//	head.rotation.y = Math.PI/6;
+  mine.rotation.y = Math.PI + theta;
+  mine.position.set(160*Math.cos(theta), 0, -160*Math.sin(theta));
+  keyframe(clock.getElapsedTime()); 
+  arm1.rotation.y = intKey[0]//gcontrol.theta1; //Math.PI/4;
+  leg1.rotation.y = intKey[1]//gcontrol.theta2;//-Math.PI/4;
+  arm2.rotation.y = intKey[1]//gcontrol.theta1; //Math.PI/4;
+  leg2.rotation.y = intKey[0]//gcontrol.theta2;//-Math.PI/4;
+  
+  camera1.lookAt (mine.position)
+  
+  requestAnimationFrame(animate);
+  render();
+
+  if (useGyro)
+  	renderer.render (scene, camera)
+  else
+  	renderer.render (scene, camera1)
+}
+
+function loadJSON() {
+	return {
+  "preset": "key1",
+  "remembered": {
+    "Default": {
+      "0": {
+        "theta1": 0.01,
+        "theta2": 0.01
+      }
+    },
+    "key1": {
+      "0": {
+        "theta1": 0.5,
+        "theta2": -0.8
+      }
+    },
+    "key2": {
+      "0": {
+        "theta1": -0.8,
+        "theta2": 0.8
+      }
+    }
+  },
+  "closed": false,
+  "folders": {}
+}
+}
+function render() {
+
+  renderer.render(scene, camera);
+
+}
+</script>
+</body>
+</html>
