@@ -18,13 +18,14 @@
 </style>
 </head>
 <body>
-<div id="info"><button id='switch'>using Gyro</button></div>
-<div id = "info"> 
-	 <br>
-	<button id="play" style="width:20%">Play</button> 
-	<br> <a href="https://developers.google.com/web/updates/2017/09/autoplay-policy-changes"></a>
 
-  </div>
+<div id = "info"> 
+	<br><br>
+	<button id="play" style="width:10%">Play</button><br> 
+	<a href="https://developers.google.com/web/updates/2017/09/autoplay-policy-changes"></a>
+</div>
+
+<div id = "info"><button id='switch'>using Gyro</button></div>
 
 <audio id="soundtrack" autoplay loop style="display:none">
 <source src="mp3/Wind_Liner_DAISHI_DANCE.mp3"  type='audio/mp3'>
@@ -50,6 +51,12 @@ $('#play').click ( function() {
 	}
 });
 
+$('#switch').click ( function () {
+	useGyro = !useGyro;
+  if (useGyro) $('#switch').text ('using Gyro')
+  else $('#switch').text ('using LookAt')
+})
+
 var soundTrack;
 var isPaused = false;
 var camera, scene, renderer;
@@ -65,11 +72,11 @@ var useGyro = true;
 var theta1 = 0,
   theta2 = 0;
 var pose1 = {
-	theta1: .5,
+  theta1: .8,
   theta2: -.8
 }
 var pose2 = {
-	theta1: -.8,
+  theta1: -.8,
   theta2: .8
 }
 var keys = [
@@ -77,17 +84,13 @@ var keys = [
   [0.5, pose2],
   [1, pose1]
 ];
-var T = 120/112;
+var T = 364/400;
 var clock = new THREE.Clock();
 var ts = clock.getElapsedTime();  // start time
 var intKey = [];
 
 ///////////////
-$('#switch').click ( function () {
-	useGyro = !useGyro;
-  if (useGyro) $('#switch').text ('using Gyro')
-  else $('#switch').text ('using LookAt')
-})
+
 
 init();
 animate();
@@ -333,7 +336,9 @@ function animate() {
   camera1.lookAt (mine.position)
   
   requestAnimationFrame(animate);
+  
 
+  
   if (useGyro)
   	renderer.render (scene, camera)
   else
@@ -352,7 +357,7 @@ function loadJSON() {
     },
     "key1": {
       "0": {
-        "theta1": 0.5,
+        "theta1": 0.8,
         "theta2": -0.8
       }
     },
@@ -366,6 +371,11 @@ function loadJSON() {
   "closed": false,
   "folders": {}
 }
+}
+function render() {
+
+  renderer.render(scene, camera);
+
 }
 </script>
 </body>
