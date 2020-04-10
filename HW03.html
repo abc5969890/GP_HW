@@ -9,6 +9,12 @@
   text-align: center;
   color: #ffff00
 }
+#gui {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+ //   height: 350px;
+}
 </style>
 </head>
 <body>
@@ -156,8 +162,7 @@ function makeArm1() {
 }
 function makeArm2() {
   var group = new THREE.Group();
-  var mat = new THREE.MeshNormalMaterial({transparent:true, opacity:opc});
-  var body = new THREE.Mesh (new THREE.BoxGeometry(3.82*k, 1.24*k, 1.24*k), mat);
+  
   let loader = new THREE.TextureLoader();
   var skin = 
 	[
@@ -168,7 +173,8 @@ function makeArm2() {
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_right.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_arm_left.png") })
 	]
-  
+	
+  var body = new THREE.Mesh (new THREE.BoxGeometry(3.82*k, 1.24*k, 1.24*k), skin);
   group.add (body);
   body.position.x = 3.82*k/2;
   group.add (new THREE.AxesHelper (k));
@@ -179,8 +185,6 @@ function makeArm2() {
 
 function makeLeg1() {
   var group = new THREE.Group();
-  var mat = new THREE.MeshNormalMaterial({transparent:true, opacity:opc});
-  var body = new THREE.Mesh (new THREE.BoxGeometry(4.09*k, 1.26*k, 1.26*k), mat);
   
   let loader = new THREE.TextureLoader();
   var skin = 
@@ -192,7 +196,8 @@ function makeLeg1() {
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_left.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_right.png") })
 	]
-  
+	
+  var body = new THREE.Mesh (new THREE.BoxGeometry(4.09*k, 1.26*k, 1.26*k), skin);
   group.add (body);
   body.position.x = 4.09*k/2;
   group.add (new THREE.AxesHelper (k));
@@ -202,8 +207,6 @@ function makeLeg1() {
 }
 function makeLeg2() {
   var group = new THREE.Group();
-  var mat = new THREE.MeshNormalMaterial({transparent:true, opacity:opc});
-  var body = new THREE.Mesh (new THREE.BoxGeometry(4.09*k, 1.26*k, 1.26*k), mat);
   
   let loader = new THREE.TextureLoader();
   var skin = 
@@ -215,7 +218,8 @@ function makeLeg2() {
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_right.png") }),
 		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_leg_left.png") })
 	]
-  
+	
+  var body = new THREE.Mesh (new THREE.BoxGeometry(4.09*k, 1.26*k, 1.26*k), skin);
   group.add (body);
   body.position.x = 4.09*k/2;
   group.add (new THREE.AxesHelper (k));
@@ -226,20 +230,18 @@ function makeLeg2() {
 
 function makeHead() {
   var headGroup = new THREE.Group();
-  var mat = new THREE.MeshNormalMaterial({transparent:true, opacity:opc});
-  var headBody = new THREE.Mesh (new THREE.BoxGeometry(2.52*k, 2.52*k, 2.52*k), mat);
-  
+
   let loader = new THREE.TextureLoader();
   var skin = 
 	[
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_face_left.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_face_right.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_face_top.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_face_down.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_face_front.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_face_back.png") }),	
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/face_left.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/face_right.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/face_top.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/face_down.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/face_front.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/face_back.png") }),	
 	]
-	
+  var headBody = new THREE.Mesh (new THREE.BoxGeometry(2.52*k, 2.52*k, 2.52*k), skin);
   headGroup.add (headBody);
   headBody.position.y = 2.52*k/2;
   headGroup.add (new THREE.AxesHelper (k));
@@ -248,20 +250,19 @@ function makeHead() {
 
 function makeTorso () {
   var group = new THREE.Group();
-  var mat = new THREE.MeshNormalMaterial({transparent:true, opacity:opc});
-  var body = new THREE.Mesh (new THREE.BoxGeometry(2.52*k, 3.48*k, 1.26*k), mat);
   
   let loader = new THREE.TextureLoader();
   var skin = 
 	[
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_picture/left_body_left.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_body_right.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_body_top.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_body_down.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_body_front.png") }),
-		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/left_body_back.png") }),	
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/body_left.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/body_right.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/body_top.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/body_down.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/body_front.png") }),
+		new THREE.MeshBasicMaterial({ map: loader.load ("https://raw.githubusercontent.com/abc5969890/GP_HW/master/pictures/HW3_pictures/body_back.png") }),	
 	]
-  
+	
+  var body = new THREE.Mesh (new THREE.BoxGeometry(2.52*k, 3.48*k, 1.26*k), skin);
   group.add (body);
   body.position.y = 3.48*k/2;
   group.add (new THREE.AxesHelper (2*k));
@@ -298,7 +299,6 @@ function animate() {
   camera1.lookAt (mine.position)
   
   requestAnimationFrame(animate);
-  render();
 
   if (useGyro)
   	renderer.render (scene, camera)
@@ -332,11 +332,6 @@ function loadJSON() {
   "closed": false,
   "folders": {}
 }
-}
-function render() {
-
-  renderer.render(scene, camera);
-
 }
 </script>
 </body>
