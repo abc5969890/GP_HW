@@ -39,20 +39,41 @@
     </style>
   </head>
 <body>
+	  
+	<div id = "info"> 
+		<br><br>
+		<button id="play" style="width:10%">Pause</button><br> 
+		<a href="https://developers.google.com/web/updates/2017/09/autoplay-policy-changes"></a>
+	</div>
+
+
+	<audio id="soundtrack" autoplay loop style="display:none">
+	<source src="mp3/Wind_Liner_DAISHI_DANCE.mp3"  type='audio/mp3'>
+	</audio>  
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
-  <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://jyunming-chen.github.io/game3js/js/ccdsys.js"></script>
-  <script src="https://raw.githack.com/mrdoob/three.js/dev/examples/js/loaders/MTLLoader.js"></script>
-  <script src="https://raw.githack.com/mrdoob/three.js/dev/examples/js/loaders/OBJLoader.js"></script>
-  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+	<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+	<script src="https://jyunming-chen.github.io/game3js/js/ccdsys.js"></script>
+	<script src="https://raw.githack.com/mrdoob/three.js/dev/examples/js/loaders/MTLLoader.js"></script>
+	<script src="https://raw.githack.com/mrdoob/three.js/dev/examples/js/loaders/OBJLoader.js"></script>
+	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 	
-  <div id = 'info' > HW4<br>   </div>
+	<div id = 'info' > HW4<br>   </div>
   
 
   
   <script>
   
+	$('#play').click ( function() {
+		isPaused = !isPaused;
+		if (isPaused) { 
+			$('#play').text ('Play')
+			soundTrack.pause()
+		} else {
+			$('#play').text ('Pause')
+			soundTrack.play()
+		}
+	});
 
 
     class TwoLinkArm {
@@ -110,7 +131,7 @@
 		constructor (clr)
 		{
 			this.mesh = new THREE.Mesh(new THREE.CylinderGeometry(Circle.radius, Circle.radius, 5, 38), new THREE.MeshBasicMaterial({color:clr}));
-			this.pos = new THREE.Vector3(Math.random()*184-92, 0, Math.random()*184-92);
+			this.pos = new THREE.Vector3(0,0,-30);
 			this.force = new THREE.Vector3(0, -80, 0);
 			this.vel = new THREE.Vector3(Math.random() * (100), 0, Math.random() * (100));
 			this.mass = 1;
@@ -173,7 +194,8 @@
 		}
 }
 
-
+	var soundTrack;
+	var isPaused = false;
     var camera, scene, renderer, mesh;
     var twoLinkArm, twoLink;
     var twoLinkArm2, twoLink2;
@@ -188,10 +210,11 @@
 
     function init() {
 	  
-	  
-	  window.addEventListener( 'resize', onWindowResize, false );
-	  scene = new THREE.Scene();
-	  var container, meshb;
+	soundTrack = document.getElementById ('soundtrack');
+	
+	window.addEventListener( 'resize', onWindowResize, false );
+	scene = new THREE.Scene();
+	var container, meshb;
     container = document.getElementById( 'container' );
 
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
@@ -346,7 +369,7 @@
       pucks[0].light.position.set(pucks[0].pos.x, pucks[0].pos.y+2, pucks[0].pos.z);
     
       collisionPaddle(twoLinkArm,pucks[0]);
-      collisionPaddle(twoLinkArm2,pucks[0]);
+      collisionPaddle2(twoLinkArm2,pucks[0]);
     
       twoLinkArm2.target.copy(twoLink2.worldToLocal(pucks[0].pos.clone()));
 
@@ -354,8 +377,29 @@
       update();
       renderer.render(scene, camera);
     }
+	
+	function collisionPaddle(twoLink,puck) {
+	  let pp=new THREE.Vector3();
+	  twoLink.paddle.getWorldPosition(pp);
+        var dis = Math.sqrt(
+          (pp.x - puck.pos.x) * (pp.x - puck.pos.x) +
+          (pp.z - puck.pos.z) * (pp.z - puck.pos.z)
+        );
+
+        if (dis <= (Circle.radius+TwoLinkArm.radius)) {
+          puck.vel.sub(puck.pos.clone().sub(pp).multiplyScalar(puck.vel.clone().sub(twoLinkArm.target.clone().multiplyScalar(10))
+              .dot(puck.pos.clone().sub(pp)) / ((Circle.radius+TwoLinkArm.radius)*(Circle.radius+TwoLinkArm.radius))));
+      
+        var ll = pp.clone().sub (puck.pos);
+        var lll = Math.sqrt(ll.x*ll.x+ll.z*ll.z);
+        var t = ll.normalize();
+        var d = Circle.radius+TwoLinkArm.radius-lll;
+        puck.pos.sub((t).multiplyScalar(d/2));
+      
+        }
+    }
     
-    function collisionPaddle(twoLink,puck) {
+    function collisionPaddle2(twoLink,puck) {
 	  let pp=new THREE.Vector3();
 	  twoLink.paddle.getWorldPosition(pp);
         var dis = Math.sqrt(
@@ -368,13 +412,14 @@
               .dot(puck.pos.clone().sub(pp)) / ((Circle.radius+TwoLinkArm.radius)*(Circle.radius+TwoLinkArm.radius))));
       
         var ll = pp.clone().sub (puck.pos);
-        var lll = Math.sqrt(ll.x*ll.x+ll.y*ll.y+ll.z*ll.z);
+        var lll = Math.sqrt(ll.x*ll.x+ll.z*ll.z);
         var t = ll.normalize();
         var d = Circle.radius+TwoLinkArm.radius-lll;
         puck.pos.sub((t).multiplyScalar(d/2));
       
         }
     }
+	
 
     function update() {
       var thetas = [twoLinkArm.theta1, twoLinkArm.theta2];
